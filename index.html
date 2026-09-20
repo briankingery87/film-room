@@ -17,11 +17,11 @@
    The CATEGORICAL SERIES palette is separate from the chrome on
    purpose. Chrome colors are chosen to sit quietly behind text;
    series colors have to stay apart from each other for a reader
-   with colour vision deficiency. These eight were validated
+   with color vision deficiency. These eight were validated
    against this page's surfaces for lightness band, chroma floor,
    CVD separation (worst adjacent pair delta-E 8.4 protan),
    normal-vision separation and contrast - every slot clears 3:1
-   on all three panel colours. Assign them IN ORDER and never
+   on all three panel colors. Assign them IN ORDER and never
    cycle them: a ninth category folds into "Other" rather than
    getting a generated hue.
    ============================================================ */
@@ -33,7 +33,7 @@
   --win:#2FA173; --lose:#8497A6;
   --c1:#3987e5; --c2:#d95926; --c3:#199e70; --c4:#c98500;
   --c5:#d55181; --c6:#9085e9; --c7:#e66767; --c8:#00a0a0; --c9:#7D93A6;
-  /* diverging pair for signed values: two poles, neutral grey midpoint */
+  /* diverging pair for signed values: two poles, neutral gray midpoint */
   --pos:#199e70; --neg:#d95926; --mid:#5B7186;
   --r:10px;
 }
@@ -81,7 +81,7 @@ section.mode.on{display:block}
 section.mode > *{margin:0 0 16px;min-width:0}          /* the one vertical rhythm rule */
 .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px}
 .card.tight{padding:13px 14px}
-/* Two charts per row rather than one centred chart with a field of navy either
+/* Two charts per row rather than one centered chart with a field of navy either
    side. minmax(0,...) not bare 1fr - a grid child defaults to min-width:auto and
    one wide nowrap table inside it will push the whole document sideways. */
 .row2{display:grid;gap:14px;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:stretch}
@@ -208,7 +208,7 @@ svg.ch.xwide{min-width:720px;max-width:1180px}
 /* Labels and their leader lines sit ON TOP of the marks they describe, so
    without this they swallow the click meant for the dot underneath - which is
    exactly the dot a reader is most likely to want, because it is the one
-   interesting enough to have been labelled. */
+   interesting enough to have been labeled. */
 .olab{fill:var(--ink);font-size:9.5px;font-weight:700;paint-order:stroke;stroke:var(--deep);stroke-width:3;
   stroke-linejoin:round;pointer-events:none}
 .olead{stroke:var(--line-strong);stroke-width:1;pointer-events:none}
@@ -325,7 +325,7 @@ dl.defs dt:first-child{margin-top:0}
 dl.defs dt i{width:9px;height:9px;border-radius:2px;display:inline-block;flex:none}
 dl.defs dd{margin:3px 0 0;color:var(--ink-2)}
 /* ---------- the chart-form gallery ----------
-   Each entry carries a miniature of the form itself. A reader recognises a
+   Each entry carries a miniature of the form itself. A reader recognizes a
    shape far faster than they read a definition of one, and the miniature is
    drawn by the same rules as the real charts so it cannot drift from them. */
 .formgrid{display:grid;gap:12px;grid-template-columns:repeat(3,minmax(0,1fr));margin-top:14px}
@@ -586,7 +586,7 @@ const METRICS = [
   { k:'capacity',    lab:'Stadium capacity',   sh:'Capacity',   g:'', fmt:'n0',  hi:1, grp:'The building',
     d:'Listed seating capacity of the home venue.' },
   { k:'elevation_m', lab:'Elevation (m)',      sh:'Elev m',     g:'', fmt:'n0',  hi:1, grp:'The building',
-    d:'Venue elevation in metres above sea level.' },
+    d:'Venue elevation in meters above sea level.' },
   { k:'year_built',  lab:'Year built',         sh:'Built',      g:'', fmt:'yr',  hi:0, grp:'The building',
     d:'Construction year of the venue. Renovations are not reflected.' },
   { k:'seats_per_1k',lab:'Seats per 1,000 subjects', sh:'Seats/1k', g:'', fmt:'d1', hi:1, grp:'The building',
@@ -682,7 +682,7 @@ function relLum(hex){
    and very dark colors disappear entirely, so anything under the luminance
    floor gets lifted toward the page accent rather than plotted invisibly. */
 function vizColor(hex){
-  /* a CSS custom property is already a deliberate chart colour - pass it through
+  /* a CSS custom property is already a deliberate chart color - pass it through
      rather than failing the hex test and silently repainting it accent blue,
      which is how a red/green slope chart once came out entirely cyan */
   if (typeof hex === 'string' && hex.trim().indexOf('var(') === 0) return hex.trim();
@@ -1062,12 +1062,12 @@ function deriveHomeSoil(){
    The rules every one of them follows:
      - a null is never plotted as a zero, and what could not be plotted is
        counted and printed rather than silently dropped;
-     - axes are labelled with units, not with field names;
-     - categorical colour is assigned IN FIXED ORDER from the validated eight
+     - axes are labeled with units, not with field names;
+     - categorical color is assigned IN FIXED ORDER from the validated eight
        and never cycled - a ninth category becomes "Other";
-     - colour never carries identity alone: every multi-series chart ships a
-       legend, and four or fewer series are direct-labelled as well;
-     - text wears text colours, never the series colour;
+     - color never carries identity alone: every multi-series chart ships a
+       legend, and four or fewer series are direct-labeled as well;
+     - text wears text colors, never the series color;
      - anything clickable carries data-team and is picked up by one delegated
        listener at the bottom of the file.
    ------------------------------------------------------------------ */
@@ -1308,7 +1308,7 @@ function svgBox(cfg){
 
 /* ================= 5. beeswarm =================
    Every program as its own dot, dodged vertically so none hide behind another.
-   A box plot summarises a distribution; this one shows you the actual members
+   A box plot summarizes a distribution; this one shows you the actual members
    of it, and you can click any of them. */
 function svgBeeswarm(cfg){
   const pts = cfg.pts.filter(p => p.v != null && isFinite(p.v));
@@ -1351,7 +1351,7 @@ function svgBeeswarm(cfg){
 }
 
 /* ================= 6. histogram =================
-   With the median marked, because the shape of a distribution and its centre
+   With the median marked, because the shape of a distribution and its center
    are two different questions and a reader usually wants both. */
 function svgHist(cfg){
   const vals = cfg.values.filter(v => v != null && isFinite(v));
@@ -1513,7 +1513,7 @@ function svgSankey(cfg){
 /* ================= 9. chord =================
    Who takes from whom, both directions at once, on one circle. The arc for a
    group is how much it is involved in overall; each ribbon is one direction of
-   one pair and is coloured by whoever did the taking. */
+   one pair and is colored by whoever did the taking. */
 function svgChord(cfg){
   const keys = cfg.keys, flows = cfg.flows.filter(f => f.v > 0);
   if (keys.length < 3 || !flows.length) return '';
@@ -1877,7 +1877,7 @@ function confOptions(id, state, div){
     '</select></label>';
 }
 const inConf = (t, c) => c === 'ALL' || t.conference === c;
-/* conferences ranked by size, so the eight colour slots go to the eight a
+/* conferences ranked by size, so the eight color slots go to the eight a
    reader is most likely to be looking for rather than to whichever eight
    happen to sort first alphabetically */
 function topConfs(pool, n){
@@ -2353,11 +2353,11 @@ function empireBody(){
     '</div>' +
 
     (swarm ? '<div class="card">' +
-      '<h3 class="qh">Every empire in the big six <span>one dot per program, nothing summarised</span></h3>' +
+      '<h3 class="qh">Every empire in the big six <span>one dot per program, nothing summarized</span></h3>' +
       '<p class="sub" style="margin:8px 0 0">A ranking shows the top of a league and a box plot shows its ' +
       'shape. This shows the actual members: each dot is one program placed at the size of its empire, ' +
       'nudged vertically only so that none of them hide behind another. Clusters, gaps and lonely outliers ' +
-      'are all real features of the league rather than artefacts of binning.</p>' +
+      'are all real features of the league rather than artifacts of binning.</p>' +
       swarm + '</div>' : '') +
 
     '<div class="card">' +
@@ -2820,9 +2820,9 @@ function pipelineBody(){
       '<h3 class="qh">League against league <span>who recruits out of whose country</span></h3>' +
       '<p class="sub" style="margin:8px 0 0">Eight conferences on a circle. The <b>arc</b> for a league is ' +
       'how many players it is involved in moving, in either direction. Each <b>ribbon</b> is one direction ' +
-      'of one pairing, coloured by the league that did the signing and anchored at both ends - so a league ' +
-      'with a thick ribbon in its own colour leaving it is taking players out of the other side’s ' +
-      'territory, and a thick ribbon arriving in somebody else’s colour is losing them. Hover any ' +
+      'of one pairing, colored by the league that did the signing and anchored at both ends - so a league ' +
+      'with a thick ribbon in its own color leaving it is taking players out of the other side’s ' +
+      'territory, and a thick ribbon arriving in somebody else’s color is losing them. Hover any ' +
       'ribbon to read it as a sentence.</p>' +
       chord +
       '<p class="sub tiny" style="margin-top:10px">Only <b>cross-conference</b> moves are drawn. A league ' +
@@ -3010,7 +3010,7 @@ function marketBody(){
             'home by seven. <b>Vertical distance from that diagonal is the market’s error.</b>',
           'Dots <b>above</b> it: the home team did better than the number. <b>Below</b> it: worse.',
           'The <span style="color:#d95926;font-weight:700">eight orange dots</span> are the biggest misses ' +
-            'in the archive and are labelled with the matchup, away side first.',
+            'in the archive and are labeled with the matchup, away side first.',
           'The honest headline is the shape, not any one dot: the cloud sits symmetrically around the ' +
             'diagonal, which means the market is <b>noisy, not biased</b>.'
         ]) +
@@ -3021,10 +3021,10 @@ function marketBody(){
         'the errors pile up. Zero means the line was exactly right; each column is a band of error and its ' +
         'height is how many games fell in it.</p>' +
         hist +
-        '<p class="sub tiny" style="margin-top:8px">A healthy market produces a single hump centred near ' +
+        '<p class="sub tiny" style="margin-top:8px">A healthy market produces a single hump centered near ' +
         'zero, and that is what is here: <b>' + pfmt(within7/(priced.length||1)) + '</b> of priced games ' +
         'finished within a touchdown of the number, and the average signed error is <b>' + sgn(bias) + '</b> ' +
-        'points. A market with a systematic lean would show the whole hump shifted off centre - that is the ' +
+        'points. A market with a systematic lean would show the whole hump shifted off center - that is the ' +
         'thing this chart exists to rule out, and it does.</p>' +
         worstPriced(priced) +
       '</div>' +
@@ -3305,7 +3305,7 @@ function labBody(){
     : LAB.color === 'div'
       ? '<div class="legend">' + ['FBS','FCS','D2','D3'].map(d =>
           '<span><i style="background:'+divColor(d)+'"></i>'+d+'</span>').join('') + '</div>'
-      : '<div class="legend"><span class="dim">Each dot wears its own program’s primary colour, lifted ' +
+      : '<div class="legend"><span class="dim">Each dot wears its own program’s primary color, lifted ' +
         'toward the page accent when the real one is too dark to see on navy.</span></div>';
 
   const hx = svgHist({ values:pts.map(p=>p.x), bins:16, h:140, xlab:mx.lab, unit:'programs',
@@ -3411,10 +3411,10 @@ function labBody(){
         '<div class="filters" style="margin-top:10px">' +
           '<label>X ' + sel('x') + '</label>' +
           '<label>Y ' + sel('y') + '</label>' +
-          '<label>Colour <select id="lab-color">' +
+          '<label>Color <select id="lab-color">' +
             '<option value="conf"'+(LAB.color==='conf'?' selected':'')+'>by conference</option>' +
             '<option value="div"'+(LAB.color==='div'?' selected':'')+'>by division</option>' +
-            '<option value="team"'+(LAB.color==='team'?' selected':'')+'>by team colour</option>' +
+            '<option value="team"'+(LAB.color==='team'?' selected':'')+'>by team color</option>' +
           '</select></label>' +
           '<label><input type="checkbox" id="lab-xlog"'+(LAB.xlog?' checked':'')+'> log X</label>' +
           '<label><input type="checkbox" id="lab-ylog"'+(LAB.ylog?' checked':'')+'> log Y</label>' +
@@ -3436,7 +3436,7 @@ function labBody(){
           'The <b>six named dots</b> are the programs sitting furthest from that line - the ones the ' +
             'relationship fits worst, which is usually where the interesting story is.',
           'A <b>log axis</b> compresses a long tail so the crowded end spreads out. Turn it on when nearly ' +
-            'every dot is piled against one edge; each labelled step is ten times the one before it.',
+            'every dot is piled against one edge; each labeled step is ten times the one before it.',
           'Programs missing either value are <b>left out entirely</b>, never plotted at zero. The count is ' +
             'printed on the right.'
         ]) +
@@ -3517,7 +3517,7 @@ function wireLab(){
 }
 
 /* ============================ THE CUTTING ROOM =================== */
-/* ---- the service catalogue ----
+/* ---- the service catalog ----
    Same shape as Ask the Atlas and Tux's Take: `layer` carries the layer NUMBER
    and its name, `n` is the count chip, and the rows are sorted by SVC_ORDER and
    then by layer number, so datasets inside one service always read 0, 1, 2, 3.
@@ -3537,13 +3537,13 @@ const SERVICE_DOCS = [
   { svc:'CFB Atlas Teams', item:ITEM.teams, layer:'0 - Teams', url:SVC.teams,
     n: () => nfmt(DB.list.length) + ' points',
     d:'The anchor layer. One row per program across all four divisions, carrying identity, conference, ' +
-      'division, colours, crest, the home venue, and the stamped ratings - SP+, Elo, FPI and the talent ' +
+      'division, colors, crest, the home venue, and the stamped ratings - SP+, Elo, FPI and the talent ' +
       'composite, all of which CFBD publishes for FBS only. Every page in this app starts from this ' +
       'request, and the CFBD team id on it is the join key to everything else.' },
 
   { svc:'CFB Atlas Territories', item:ITEM.territories, layer:'1 - State Breakdowns', url:SVC.states,
     n: liveN(() => DB.loaded.has('states'), () => DB.states.length, 'polygons', '51'),
-    d:'Per-state rollups of programs, recruits and the favoured team. The lightest of the three territory ' +
+    d:'Per-state rollups of programs, recruits and the favored team. The lightest of the three territory ' +
       'layers and the only one this app reads purely for context.' },
   { svc:'CFB Atlas Territories', item:ITEM.territories, layer:'2 - Fan Territories', url:SVC.counties,
     n: liveN(() => DB.loaded.has('counties'), () => DB.counties.length, 'polygons', '3,144'),
@@ -3576,7 +3576,7 @@ const SERVICE_DOCS = [
       'and Division III polls. The Poll Machine reads every one of them and never mixes two in a chart.' },
   { svc:'CFB Atlas Stats', item:ITEM.stats, layer:'2 - Ratings (table)', url:SVC.ratings,
     n: () => nfmt(DB.ratings.size) + ' rows',
-    d:'SP+ split into offence and defence, plus Elo, SRS and FPI. Used only as the fallback for when the ' +
+    d:'SP+ split into offense and defense, plus Elo, SRS and FPI. Used only as the fallback for when the ' +
       'stamped copy on Teams is a publish behind. SRS is still empty at source, so it is not offered as a ' +
       'metric anywhere in this app rather than being offered and then always blank.' },
   { svc:'CFB Atlas Stats', item:ITEM.stats, layer:'3 - BettingLines (table)', url:SVC.lines,
@@ -3634,7 +3634,7 @@ const rect = (x, y, w, h, c, o, rx) => '<rect x="'+x+'" y="'+y+'" width="'+w+'" 
   '" rx="'+(rx==null?2.5:rx)+'" fill="'+c+'"'+(o!=null?' fill-opacity="'+o+'"':'')+'/>';
 const line = (x1, y1, x2, y2, c, w, extra) => '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+
   '" stroke="'+c+'" stroke-width="'+(w||1.5)+'"'+(extra||'')+'/>';
-/* the little grey stubs that stand in for row labels */
+/* the little gray stubs that stand in for row labels */
 const stub = (x, y, w) => rect(x, y-1.3, w, 2.6, 'var(--ink-3)', .45, 1.3);
 
 const FORM_ART = {
@@ -3690,8 +3690,8 @@ const FORM_ART = {
   chord: () => {
     const cx = 60, cy = 32, r = 22, C = 2 * Math.PI * r;
     const seg = C / 4;
-    /* one arc per colour: the gap has to be the REST of the circumference, or the
-       dash repeats all the way round and the last colour paints over the other three */
+    /* one arc per color: the gap has to be the REST of the circumference, or the
+       dash repeats all the way round and the last color paints over the other three */
     const dash = seg - 5;
     const ring = ['var(--c1)','var(--c2)','var(--c3)','var(--c4)'].map((c, i) =>
       '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+c+'" stroke-width="5" ' +
@@ -3758,7 +3758,7 @@ const CHART_DOCS = [
   ['box', 'Box and whisker', 'The shape of a group rather than its average: middle half in the box, median ' +
     'inside it, whiskers to the furthest ordinary member, and anything past them drawn as an outlier.', 'Q2'],
   ['beeswarm', 'Beeswarm', 'Every member of a group as its own dot, nudged only enough not to overlap. A ' +
-    'box plot summarises; this one shows you the actual members and lets you click them.', 'Q1'],
+    'box plot summarizes; this one shows you the actual members and lets you click them.', 'Q1'],
   ['hist', 'Histogram', 'One measure, binned, with the median marked - what "normal" looks like, so a ' +
     'single number has something to be big or small against.', 'Q2 Q4 Q6'],
   ['treemap', 'Treemap', 'Two nested levels at once through area: the block is a conference, the tiles ' +
@@ -3774,7 +3774,7 @@ const CHART_DOCS = [
     '<i>gap</i> is the story and neither endpoint alone is.', 'Q3 Q5'],
   ['waffle', 'Waffle', 'A hundred squares, one per percent. For a share that should be felt rather than ' +
     'compared.', 'Q3'],
-  ['matrix', 'Correlation matrix', 'Every pair of metrics scored at once and coloured by strength and ' +
+  ['matrix', 'Correlation matrix', 'Every pair of metrics scored at once and colored by strength and ' +
     'direction, so a reader can find the chart worth drawing instead of guessing at it.', 'Q6']
 ];
 function formGallery(){
@@ -3819,7 +3819,7 @@ PAGE.cutting = function(el){
             'with, counted by the pair. It names both sides.'],
           ['Against the spread', 'A game counts once for each team when a closing spread is published. A ' +
             '<b>push</b> returns the stake, so it scores half for both sides and stays in the denominator. ' +
-            'Scoring a push as a loss is the bug that once put every team in Tux’s Take at zero per cent.'],
+            'Scoring a push as a loss is the bug that once put every team in Tux’s Take at zero percent.'],
           ['Mean market miss', 'Actual margin minus the margin the closing spread implied, signed from each ' +
             'team’s own point of view and averaged. Positive means a team has been beating its number.'],
           ['Conference unevenness', 'The Gini coefficient of season road miles inside a conference. Zero ' +
@@ -3867,11 +3867,11 @@ PAGE.cutting = function(el){
       'are schematic: they show the <i>shape</i> of each form rather than any real data, and none of them ' +
       'is clickable.</p>' +
       formGallery() +
-      '<p class="sub tiny" style="margin-top:14px">Colour does a job too. Categorical hues are assigned in ' +
-      'one fixed order from eight that were checked for separation under the common forms of colour ' +
+      '<p class="sub tiny" style="margin-top:14px">Color does a job too. Categorical hues are assigned in ' +
+      'one fixed order from eight that were checked for separation under the common forms of color ' +
       'blindness and for contrast against this page’s navy - a ninth category becomes "Other" rather ' +
-      'than getting a made-up hue. Nothing is identified by colour alone: every multi-series chart also ' +
-      'carries a legend, and the small ones are labelled directly.</p>' +
+      'than getting a made-up hue. Nothing is identified by color alone: every multi-series chart also ' +
+      'carries a legend, and the small ones are labeled directly.</p>' +
     '</div>' +
 
     '<div class="card">' +
@@ -3942,7 +3942,7 @@ function drawerRadar(t){
     svgRadar({ axes, div:t.division, alt:t.school + ' profile' }) +
     '<p class="sub tiny" style="margin-top:4px">Each spoke is this program’s <b>percentile within ' +
     esc(t.division||'its division')+'</b> on that metric - the edge of the web is the top of the division ' +
-    'and the centre is the bottom. A wide shape is a program that is unusual on several axes at once; a ' +
+    'and the center is the bottom. A wide shape is a program that is unusual on several axes at once; a ' +
     'spike is one that is unusual on exactly one. <b>High is not always good</b> - the travel spoke ' +
     'reaching the edge means a long season, not a strong one.</p></div>';
 }

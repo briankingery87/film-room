@@ -33,7 +33,7 @@ dossier in a side panel.
 ## What it reads
 
 Ten layers across six services, all public, all anonymous. The Cutting Room
-lists them in the family's standard service catalogue format - the one Ask the
+lists them in the family's standard service catalog format - the one Ask the
 Atlas established and Tux's Take copied - grouped by service and ordered by
 layer number inside each one:
 
@@ -76,10 +76,10 @@ Scatter (with fit line, quadrant split, log axes and direct labels on the
 outliers), lollipop, diverging bars, box and whisker, beeswarm, histogram,
 treemap, sankey, chord, bump, slope, dumbbell, waffle and a correlation matrix -
 all inline SVG this file writes itself. The Cutting Room shows a **drawn
-miniature of every one**, with what it is for and which pages use it. Categorical colour comes from eight hues
-validated for colour-vision separation and contrast against the page's navy,
+miniature of every one**, with what it is for and which pages use it. Categorical color comes from eight hues
+validated for color-vision separation and contrast against the page's navy,
 assigned in fixed order and never cycled; a ninth category becomes "Other".
-Every multi-series chart carries a legend, and nothing is identified by colour
+Every multi-series chart carries a legend, and nothing is identified by color
 alone.
 
 To publish: double-click `publish.bat`, paste a message.

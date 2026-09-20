@@ -5,7 +5,7 @@ Same pattern as Ask the Atlas and Tux's Take.
 ## One time
 
 1. Create a **public** repo on github.com named `film-room`. Do not add a
-   README, a .gitignore or a licence - this folder already has them.
+   README, a .gitignore or a license - this folder already has them.
 2. Open PowerShell in this folder: type `powershell` in the File Explorer
    address bar and press Enter.
 3. Run these one at a time, and read what each one prints:

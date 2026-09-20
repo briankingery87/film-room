@@ -13,7 +13,7 @@
      - an FBS program that is LANDLESS (rules no counties at all);
      - an FCS program whose SP+/Elo/FPI/talent are all -999 placeholders;
      - a D3 program with "N/A" strings and a capacity of -1;
-     - a program with NO logo url and a near-black primary colour;
+     - a program with NO logo url and a near-black primary color;
      - a recruit with a blank county_fips (unjoinable);
      - four UNCOMMITTED recruits (team_id -1) out of one program's county;
      - a county with no dominant program;
@@ -28,6 +28,7 @@
    ========================================================================== */
 const { chromium } = require('playwright');
 const path = require('path');
+const fs = require('fs');
 
 const PAGES = ['home','empire','price','pipeline','market','polls','lab','cutting'];
 let pass = 0, fail = 0;
@@ -63,7 +64,7 @@ const teams = [
   /* FCS - every rating is a placeholder, which is the live reality */
   T(6,'Riverbend','FCS','Valley',{ capacity:18000, year_built:1969 }),
   T(7,'Cedar Hollow','FCS','Valley',{ capacity:12500, year_built:1948 }),
-  /* no logo, near-black primary: exercises the monogram and the colour lift */
+  /* no logo, near-black primary: exercises the monogram and the color lift */
   T(8,'Black Rock','D2','Summit',{ logo_url:'', primary_color:'#000000', capacity:6000, year_built:PH }),
   /* strings that must never render, capacity -1 */
   T(9,'Pine Ridge','D3','Timber',{ capacity:-1, year_built:PH, city:'N/A', venue_name:'N/A',
@@ -72,7 +73,7 @@ const teams = [
 
 /* twelve more FBS programs with nothing but ratings and a building. They exist so
    the correlation matrix has the ten paired values it refuses to compute below -
-   with nine teams every cell is correctly a dot, which is right behaviour and
+   with nine teams every cell is correctly a dot, which is right behavior and
    useless as a test of the cell itself. */
 for (let i = 0; i < 12; i++){
   const id = 10 + i;
@@ -424,7 +425,7 @@ function serviceFor(url){
   await page.evaluate(() => setMode('market'));
   await page.waitForTimeout(700);
   ok(await count('#m-market line.cid') === 1, 'market: the identity diagonal is drawn');
-  ok(await count('#m-market text.olab') >= 4, 'market: the worst-priced games are labelled on the chart');
+  ok(await count('#m-market text.olab') >= 4, 'market: the worst-priced games are labeled on the chart');
   ok(await count('#m-market line.slopeline') >= 1, 'market: slope chart draws the open-to-close moves');
   ok(await count('#m-market .readme') >= 2, 'market: both charts carry a how-to-read block');
   const mkTxt = await page.locator('#m-market').innerText();
@@ -459,7 +460,7 @@ function serviceFor(url){
     'and no miniature is clickable - nothing invites a click that will not happen');
 
   ok(await count('#m-cutting #svc-list .svcrow') === 10,
-    'cutting: the service catalogue uses the Ask the Atlas / Tux row format, one row per layer');
+    'cutting: the service catalog uses the Ask the Atlas / Tux row format, one row per layer');
   ok(await count('#m-cutting #svc-list .svcgroup') === 6,
     'and one group heading per service, not one per layer');
   ok(await count('#m-cutting .endpoint .eplab') === 10, 'every row carries its REST endpoint block');
@@ -496,12 +497,12 @@ function serviceFor(url){
   ok(labOrder === 'board-first', 'lab: the board comes BEFORE the chart it drives');
   ok(await count('#m-lab table.heat td.on') === 2,
     'lab: the pair currently on the chart is outlined on the board, both symmetric cells');
-  ok(await count('#m-lab .scale .ramp') === 1, 'lab: the matrix ships a colour scale legend');
+  ok(await count('#m-lab .scale .ramp') === 1, 'lab: the matrix ships a color scale legend');
   ok(await count('#m-lab .readme') >= 2, 'lab: both the scatter and the matrix carry a how-to-read block');
-  ok(await count('#m-lab .legend') >= 1, 'lab: the scatter ships a colour legend');
+  ok(await count('#m-lab .legend') >= 1, 'lab: the scatter ships a color legend');
   ok(await count('#m-lab svg.ch') >= 3, 'lab: the scatter has its two marginal histograms beside it');
 
-  /* ---- tables: centred, capped, cascading ---- */
+  /* ---- tables: centered, capped, cascading ---- */
   console.log('\n--- tables ---');
   await page.evaluate(() => setMode('empire'));
   await page.waitForTimeout(500);
@@ -510,7 +511,7 @@ function serviceFor(url){
     const th = document.querySelector('#emp-tbl th:not(.rk):not(.lft)');
     return { td: td && getComputedStyle(td).textAlign, th: th && getComputedStyle(th).textAlign };
   });
-  ok(tAlign.td === 'center' && tAlign.th === 'center', 'table values and headers are centred');
+  ok(tAlign.td === 'center' && tAlign.th === 'center', 'table values and headers are centered');
   const capped = await page.evaluate(() => {
     const box = document.querySelector('#emp-tbl .tbox');
     const cs = getComputedStyle(box);
@@ -649,7 +650,7 @@ function serviceFor(url){
     await page.waitForTimeout(650);
     await page.screenshot({ path:'shot-'+id+'.png', fullPage:false });
   }
-  /* the service catalogue sits below the fold on the Cutting Room, and it is the
+  /* the service catalog sits below the fold on the Cutting Room, and it is the
      block most likely to be restyled by accident - shoot it on its own */
   await page.evaluate(() => setMode('cutting'));
   await page.waitForTimeout(500);
@@ -669,6 +670,29 @@ function serviceFor(url){
   await page.evaluate(() => setMode('empire'));
   await page.waitForTimeout(450);
   await page.screenshot({ path:'shot-phone.png', fullPage:false });
+
+  /* ---- American spelling, enforced ----
+     The three Atlas apps ship American spelling. A British form is easy to
+     type and impossible to spot by eye across a quarter of a megabyte, so it
+     is a test rather than a habit. This scans the BUILT file, comments and
+     prose alike, because a comment is read by the next person to open it. */
+  console.log('\n--- spelling ---');
+  const BRITISH = [
+    'colour','colours','coloured','colouring','behaviour','behaviours',
+    'centre','centres','centred','centring','labelled','labelling',
+    'recognise','recognised','recognises','summarise','summarised','summarises',
+    'organise','organised','organisation','analyse','analysed','analyses',
+    'favour','favours','favoured','favourite','favourites',
+    'defence','defences','offence','offences','metre','metres',
+    'catalogue','catalogues','licence','grey','greyish','artefact','artefacts',
+    'modelling','travelled','travelling','cancelled','signalling',
+    'whilst','amongst','towards','learnt','spelt','neighbour','honour',
+    'practise','practised','pretence','programme','programmes','judgement'
+  ];
+  const built = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
+  const hits = BRITISH.filter(w => new RegExp('\\b' + w + '\\b', 'i').test(built));
+  ok(hits.length === 0, 'the built file carries no British spelling' +
+    (hits.length ? ' :: found ' + hits.join(', ') : ''));
 
   console.log('\n--- errors seen ---');
   if (errors.length) errors.slice(0,8).forEach(e => console.log('  ! ' + e));
