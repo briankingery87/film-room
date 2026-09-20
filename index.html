@@ -309,39 +309,49 @@ svg.ch.xwide{min-width:720px;max-width:1180px}
 @media(max-width:700px){ .rk-head{font-size:16px} .rk-num{font-size:24px} }
 
 /* ---------- the four-surface strip under the hero ----------
-   Ported from the Ask the Atlas home page so the four apps introduce each
-   other the same way on every one of them: a chip on the left, the app's own
-   role tag on the right, the name, a paragraph, three bullets, and a call to
-   action. The app you are standing in is outlined in Atlas orange with its
-   chip filled, its name orange, and no button - a link back to the page you
-   are already on is a dead control, so it carries a closing line instead.
-   The role tag keeps ITS OWN app color on every surface; only the orange
-   "you are here" treatment moves from page to page. */
-.atlasgrid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr))}
-.atlascard{background:var(--panel-2);border:1px solid var(--line);border-radius:var(--r);
-  padding:14px;color:inherit;min-width:0;display:flex;flex-direction:column}
-a.atlascard:hover{border-color:var(--accent);text-decoration:none}
-a.atlascard:hover .atlasname{text-decoration:underline}
-.atlascard.here{border:2px solid var(--alert);padding:13px;background:rgba(242,100,48,.05)}
-.atlastop{display:flex;gap:9px;align-items:center;justify-content:space-between;margin-bottom:9px}
-.atlaschip{font-size:9.5px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;
-  background:rgba(159,182,198,.16);color:var(--ink-2);border-radius:4px;padding:3px 7px;white-space:nowrap}
-.atlascard.here .atlaschip{background:var(--alert);color:#190800}
-.atlastag{font-size:9.5px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;
-  border:1px solid currentColor;border-radius:4px;padding:2px 7px;white-space:nowrap}
-.atlasname{display:block;font-size:12.5px;font-weight:900;letter-spacing:.11em;
-  text-transform:uppercase;color:var(--accent);margin-bottom:8px}
-.atlascard.here .atlasname{color:var(--alert)}
-.atlascard p{margin:0;color:var(--ink-2);font-size:12.5px;line-height:1.5}
-.atlascard ul{margin:9px 0 0;padding-left:17px;color:var(--ink-2);font-size:12px;line-height:1.5}
-.atlascard li{margin:0 0 3px}
-.atlascard p b,.atlascard li b{color:var(--ink)}
-.atlascta{align-self:flex-start;margin-top:14px;background:var(--accent);color:var(--deep);
-  border-radius:8px;padding:9px 14px;font-size:11.5px;font-weight:900;letter-spacing:.06em}
-a.atlascard:hover .atlascta{background:#6FD2F0}
-.atlasfoot{margin-top:14px;color:var(--ink-3);font-size:11px;line-height:1.4}
-/* the bullets, not the paragraph, take the slack so every button lines up */
-.atlascard ul{flex:1 1 auto}
+   Ported value for value off the live Tux's Take home page, so the four
+   surfaces introduce each other identically on every one of them. Class
+   names, type sizes, badge colors, button shapes and the closing line all
+   match that page; if it changes there, change it there first and copy it
+   across rather than tuning this copy.
+
+   Two family rules. The role badge keeps ITS OWN app color on every surface -
+   only the orange "you are here" treatment moves page to page. And the app
+   you are standing in gets a span, not an anchor: a link back to the page you
+   are already on is a dead control, so it carries a live count instead. */
+.appgrid{display:grid;gap:14px;grid-template-columns:repeat(4,minmax(0,1fr))}
+@media(max-width:1180px){ .appgrid{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media(max-width:700px){ .appgrid{grid-template-columns:minmax(0,1fr)} }
+.appcard{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+  padding:16px;min-width:0;display:flex;flex-direction:column}
+.appcard.youarehere{border-color:var(--alert)}
+.half-h{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:9px}
+.badge{font-size:9px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;
+  border-radius:4px;padding:3px 8px;white-space:nowrap}
+.badge.cfg{color:#C4D4DE;background:rgba(159,182,198,.18)}
+.badge.cus{color:#F08A5D;background:rgba(242,100,48,.20)}
+.badge.cus.here{color:#12202C;background:var(--alert)}
+.badge.role{font-weight:800;background:transparent;border:1px solid currentColor}
+.badge.role.exp {color:#C4D4DE;border-color:rgba(159,182,198,.45)}
+.badge.role.ask {color:#F08A5D;border-color:rgba(242,100,48,.55)}
+.badge.role.post{color:#57C79A;border-color:rgba(47,161,115,.60)}
+.badge.role.film{color:#B79BF0;border-color:rgba(159,120,232,.60)}
+h3.cardtitle{font-size:15px;font-weight:900;letter-spacing:.02em;text-transform:none;
+  color:var(--accent);margin:0 0 7px}
+.appcard.youarehere h3.cardtitle{color:var(--alert)}
+.appcard p{margin:0;color:var(--ink-2);font-size:11.5px;line-height:1.5}
+ul.road{margin:9px 0 0;padding-left:17px;color:var(--ink-2);font-size:11.5px;line-height:1.5;flex:1 1 auto}
+ul.road li{margin:0 0 4px}
+.appcard p b,ul.road b{color:var(--ink)}
+.cardgo{display:flex;flex-direction:column;align-items:flex-start;gap:8px;margin-top:12px}
+.btn{font-size:12px;font-weight:700;letter-spacing:.04em;border-radius:8px;padding:8px 14px;
+  border:1px solid transparent;display:block}
+a.btn.ghost{color:var(--ink-2);background:transparent;border-color:rgba(159,182,198,.32)}
+a.btn.ghost:hover{border-color:var(--accent);color:var(--ink);text-decoration:none}
+a.btn.solid{color:var(--panel);background:var(--accent);border-color:var(--accent)}
+a.btn.solid:hover{background:#6FD2F0;text-decoration:none}
+.btn.stat{color:var(--alert);background:rgba(242,100,48,.12);border-color:var(--alert)}
+.appfoot{grid-column:1 / -1;font-size:11px;color:var(--ink-3)}
 
 .pill{display:inline-block;border-radius:999px;padding:2px 9px;font-size:10.5px;font-weight:900;
   letter-spacing:.06em;text-transform:uppercase}
@@ -524,6 +534,7 @@ const ITEM_URL = id => 'https://www.arcgis.com/home/item.html?id=' + id;
 const ATLAS = { ask:'https://briankingery87.github.io/ask-the-atlas/',
                 tux:'https://briankingery87.github.io/tuxs-take/',
                 exb:'https://experience.arcgis.com/experience/99f6d8062d3943c08aa7728d209060ff/',
+                making:'https://experience.arcgis.com/experience/99f6d8062d3943c08aa7728d209060ff/page/Page?views=Making-of-the-Atlas',
                 paper:'https://www.arcgis.com/home/item.html?id=' + ITEM.territories };
 
 /* Explicit field lists, never outFields=*. Payload is the whole cost of this
@@ -2040,67 +2051,73 @@ function findings(){
 }
 
 /* ============================ THE FOUR SURFACES =================
-   The strip that sits under the hero on every custom Atlas page, so the four
-   surfaces introduce each other identically wherever you land. Ported from
-   the Ask the Atlas home page: chip left, the app's own role tag right, the
-   name, a paragraph, three bullets, a button.
+   Ported value for value off the live Tux's Take home page: the same class
+   names, the same badge colors, the same button shapes, the same closing
+   line. The prose is the canonical copy from that page with the two
+   perspective words moved - on Tux's Take the Tux card says "this", and here
+   it has to name itself, because the page you are standing in has changed.
 
-   Two rules carry across the family. The role tag keeps its own app color on
-   every surface - only the orange "you are here" treatment moves. And the app
-   you are standing in is a div rather than an anchor, with a closing line in
-   place of the button, because a link back to the page you are already on is
-   a dead control.                                                        */
-const ATLAS_APPS = [
-  { chip:'Configurable', tag:'Explore', tagColor:'var(--ink-3)',
-    name:'The CFB Atlas Experience', href:ATLAS.exb, cta:'Open the Experience',
+   Two family rules carry across. The role badge keeps ITS OWN app color on
+   every surface; only the orange "you are here" treatment moves. And the
+   current app gets a span, not an anchor, because a link back to the page you
+   are already on is a dead control - it carries a live count instead.     */
+const APPS = [
+  { badge:'Configurable', bcls:'cfg', role:'Explore', rcls:'exp',
+    title:'The CFB Atlas Experience',
     p:'Layer-first. Pick a view, turn layers on, click a feature, read the popup. It is the place to ' +
       '<b>explore</b> - fan territories, empires, recruiting flows, travel demand, the Top 25, the core ' +
       'map with everything on it.',
     li:['Nine web maps and four dashboards, all authored',
         'Arcade popups carry the narrative and the placeholder rules',
-        'Changes are made by configuration, not code'] },
+        'Changes are made by configuration, not code'],
+    go:[{ kind:'ghost', href:ATLAS.making, label:'See how it all started' },
+        { kind:'solid', href:ATLAS.exb,    label:'Open the Experience' }] },
 
-  { chip:'Custom', tag:'Question-first', tagColor:'var(--alert)',
-    name:'Ask the Atlas', href:ATLAS.ask, cta:'Open Ask the Atlas',
-    p:'Question-first. Reads the same services through their REST endpoints and computes answers ' +
-      'configuration cannot: nearest programs across all four divisions, head-to-head comparisons, ' +
-      'ad-hoc screening, ranked slates, strength of schedule.',
-    li:['One HTML file, no server, no API key, no build step',
-        'Client-side math on the published data - joins, distances, indexes',
-        'Grows through the season as the services fill in'] },
+  { badge:'Custom', bcls:'cus', role:'Question-first', rcls:'ask',
+    title:'Ask the Atlas',
+    p:'Question-first, and it looks <b>forward</b>. Whose country do you live in, who wins the argument, ' +
+      'how hard is the road, what should you actually watch this weekend.',
+    li:['Reads the same services over REST, no server and no API key',
+        'Answers the configurable side cannot compute',
+        'Every completed game on The Slate links straight to its recap'],
+    go:[{ kind:'solid', href:ATLAS.ask, label:'Open Ask the Atlas' }] },
 
-  { chip:'Custom', tag:'Post-game recaps', tagColor:'var(--accent)',
-    name:'Tux’s Take', href:ATLAS.tux, cta:'Open Tux’s Take',
-    p:'Result-first. Scores what is worth watching <b>before</b> kickoff, then reads the same Atlas and ' +
-      'writes what happened <b>after</b> - final scores, quarter by quarter, an Aftermath Index and a ' +
-      'recap in a beagle’s voice.',
-    li:['Every completed game on The Slate links to its recap',
-        'The Tux grade and the Aftermath Index are quoted, never recomputed',
-        'Same <code>game_id</code> join key as the rest of the Atlas'] },
+  { badge:'Custom', bcls:'cus', role:'Post-game recaps', rcls:'post',
+    title:'Tux’s Take',
+    p:'The same idea pointed <b>backward</b>. Ask the Atlas tells you what to watch; Tux’s Take tells ' +
+      'you what happened, and what a beagle made of it.',
+    li:['Cumulative archive, every week of the season',
+        'An Aftermath Index and a Tux grade on every finished game',
+        'Machine-written prose, labeled per row, numbers never computed by it'],
+    go:[{ kind:'solid', href:ATLAS.tux, label:'Open Tux’s Take' }] },
 
-  { chip:'Custom · you are here', tag:'Analytics', tagColor:'var(--c6)',
-    name:'The Film Room', href:null, cta:null,
+  { badge:'Custom · you are here', bcls:'cus here', role:'Analytics', rcls:'film',
+    title:'The Film Room', here:true,
     p:'Relationship-first. Puts two different Atlas layers on the same pair of axes and asks whether they ' +
       'have anything to do with each other. Does owning people win games? What does the schedule cost?',
     li:['Six questions plus The Lab - plot anything against anything',
         'Fourteen chart forms, all inline SVG, no chart library',
-        'Every correlation prints its n and stops at “tendency”'],
-    foot:'Four surfaces, one data model. None of them replaces the others.' }
+        'Every correlation prints its <code>n</code> and stops at “tendency”'],
+    stat: () => nfmt(DB.list.length) + ' programs on every axis' }
 ];
 
-const ATLAS_CARDS = ATLAS_APPS.map(a => {
-  const inner =
-    '<div class="atlastop"><span class="atlaschip">' + esc(a.chip) + '</span>' +
-    '<span class="atlastag" style="color:' + a.tagColor + '">' + esc(a.tag) + '</span></div>' +
-    '<span class="atlasname">' + esc(a.name) + '</span>' +
-    '<p>' + a.p + '</p>' +
-    '<ul>' + a.li.map(x => '<li>' + x + '</li>').join('') + '</ul>' +
-    (a.cta ? '<span class="atlascta">' + esc(a.cta) + ' &rarr;</span>' : '') +
-    (a.foot ? '<div class="atlasfoot">' + esc(a.foot) + '</div>' : '');
-  return a.href
-    ? '<a class="atlascard" href="' + a.href + '" target="_blank" rel="noopener">' + inner + '</a>'
-    : '<div class="atlascard here">' + inner + '</div>';
-}).join('');
+function appCards(){
+  return APPS.map(a =>
+    '<div class="appcard' + (a.here ? ' youarehere' : '') + '">' +
+      '<div class="half-h"><span class="badge ' + a.bcls + '">' + esc(a.badge) + '</span>' +
+      '<span class="badge role ' + a.rcls + '">' + esc(a.role) + '</span></div>' +
+      '<h3 class="cardtitle">' + esc(a.title) + '</h3>' +
+      '<p class="sub tiny">' + a.p + '</p>' +
+      '<ul class="road">' + a.li.map(x => '<li>' + x + '</li>').join('') + '</ul>' +
+      '<div class="cardgo">' +
+        (a.go || []).map(b => '<a class="btn ' + b.kind + '" href="' + b.href +
+          '" target="_blank" rel="noopener">' + esc(b.label) + ' &rarr;</a>').join('') +
+        (a.stat ? '<span class="btn stat">' + esc(a.stat()) + '</span>' : '') +
+      '</div>' +
+    '</div>').join('') +
+    '<div class="appfoot tiny dim">Four surfaces, one data model, one ' +
+      '<code>team_id</code> join key. None of them replaces the others.</div>';
+}
 
 /* ============================ THE ROOM CARDS ====================
    The six questions, carrying the same anatomy the cards on Ask the Atlas and
@@ -2210,7 +2227,7 @@ PAGE.home = function(el){
       '</div>' +
     '</div>' +
 
-    '<div class="atlasgrid">' + ATLAS_CARDS + '</div>' +
+    '<div class="appgrid">' + appCards() + '</div>' +
 
     '<div class="tiles">' +
       tile(nfmt(DB.list.length), 'Programs', 'FBS, FCS, D2 and D3') +
