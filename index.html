@@ -280,6 +280,34 @@ svg.ch.xwide{min-width:720px;max-width:1180px}
 .qcard span{display:block;color:var(--ink-2);font-size:12.5px}
 .qcard i{display:block;font-style:normal;color:var(--accent);font-size:10.5px;letter-spacing:.12em;
   text-transform:uppercase;font-weight:900;margin-bottom:6px}
+/* ---------- the room cards on the home page ----------
+   Same anatomy as the question cards on Ask the Atlas and Tux's Take, so the
+   three apps read as one family: orange eyebrow, the question itself, a short
+   paragraph of what the room actually does, a rule, one live number pulled
+   from the data that just loaded, and a solid call to action across the foot.
+   The whole card is the button - the .rk-cta inside it is a span, because a
+   button inside a button is invalid and stops being clickable. */
+.roomcard{background:var(--panel-2);border:1px solid var(--line);border-radius:var(--r);
+  padding:16px 16px 15px;cursor:pointer;text-align:left;width:100%;
+  display:flex;flex-direction:column;min-width:0;transition:border-color .12s,transform .12s}
+.roomcard:hover{border-color:var(--accent);transform:translateY(-2px)}
+.roomcard:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.rk-eyebrow{font-size:10.5px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--alert);display:block;margin-bottom:7px}
+.rk-head{display:block;font-size:17px;font-weight:900;line-height:1.2;margin-bottom:7px;color:var(--ink)}
+.rk-body{display:block;color:var(--ink-2);font-size:12.5px;line-height:1.5;flex:1 1 auto}
+.rk-rule{border:0;border-top:1px solid var(--line);margin:14px 0 11px;width:100%}
+.rk-stat{display:block;margin-bottom:13px}
+.rk-num{display:block;font-size:27px;font-weight:900;line-height:1.05;color:var(--accent);
+  font-variant-numeric:tabular-nums}
+.rk-lab{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-3);font-weight:700;margin-top:4px}
+.rk-cta{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  background:var(--accent);color:var(--deep);border-radius:8px;padding:9px 13px;
+  font-size:11.5px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
+.roomcard:hover .rk-cta{background:#6FD2F0}
+@media(max-width:700px){ .rk-head{font-size:16px} .rk-num{font-size:24px} }
+
 .pill{display:inline-block;border-radius:999px;padding:2px 9px;font-size:10.5px;font-weight:900;
   letter-spacing:.06em;text-transform:uppercase}
 .pill.up{background:rgba(25,158,112,.20);color:#5FD3A6}
@@ -1976,15 +2004,93 @@ function findings(){
   return out.slice(0, 6);
 }
 
+/* ============================ THE ROOM CARDS ====================
+   The six questions, carrying the same anatomy the cards on Ask the Atlas and
+   Tux's Take carry: an orange eyebrow, the question, a paragraph of what the
+   room actually does, a rule, one number, and a call to action.
+
+   Every stat() here is derived from the CORE load only - teams, empires,
+   ratings, rankings, recaps. None of them touches a group that is fetched on
+   demand, because the home page is the one page that must never wait on a
+   3,144-row county read to print a number. A stat that comes back null (a
+   field still empty at source) drops its own block rather than printing a
+   dash, and the card still stands up.                                  */
+const ROOM_DEFS = [
+  { id:'empire', n:1, head:'Does owning people win games?',
+    body:'Every program in the Atlas rules a fan empire - the counties where the gravity model puts it ' +
+      'first. This room plots the size of that empire against how good the team actually is, splits the ' +
+      'field on both medians, and names the four corners: blue bloods, sleeping giants, programs punching ' +
+      'up, and the quiet majority.',
+    cta:'Open the Empire Ledger',
+    stat: () => { const n = withEmpires(); return n ? { n:nfmt(n), lab:'fan empires ranked' } : null; } },
+
+  { id:'price', n:2, head:'What does the schedule cost?',
+    body:'A conference is a travel contract before it is anything else. This room measures the road in ' +
+      'great-circle miles - the floor, not a flight path - ranks conferences by what they ask of their ' +
+      'members, finds the longest single trip anybody makes, and separates the programs that win at home ' +
+      'from the ones that win anywhere.',
+    cta:'Open The Price',
+    /* the archive, not the travel layer: the travel layer is fetched on demand
+       and the home page is not allowed to wait on it. One non-neutral game is
+       one road trip for the away side, which is the same unit The Price ranks. */
+    stat: () => { const n = DB.results.filter(g => !num(g.neutral_site) &&
+                                                  String(g.neutral_site) !== 'true').length;
+                  return n ? { n:nfmt(n), lab:'road trips played so far' } : null; } },
+
+  { id:'pipeline', n:3, head:'Who farms their own country?',
+    body:'The one join no other Atlas app makes: every recruit in the published class matched to the ' +
+      'county he came from, and that county matched to the program that owns it. Out of it fall home-soil ' +
+      'rate, empire yield, and a poaching board naming who is taking players out of whose back yard.',
+    cta:'Open The Pipeline',
+    stat: () => { const n = DB.list.filter(t => num(t.recruiting_rank) != null).length;
+                  return n ? { n:nfmt(n), lab:'recruiting classes ranked' } : null; } },
+
+  { id:'market', n:4, head:'Where is the line wrong?',
+    body:'The betting market is a crowd forecast with a price on it. This room scores every program ' +
+      'against the number rather than against the scoreboard, measures how far the line moved after it ' +
+      'was posted, and calls out by name the games the market priced worst all season.',
+    cta:'Open The Market',
+    stat: () => { const n = DB.results.filter(g => num(g.closing_spread) != null).length;
+                  return n ? { n:nfmt(n), lab:'games carrying a closing line' } : null; } },
+
+  { id:'polls', n:5, head:'What do voters see that models do not?',
+    body:'Five polls publish into the Atlas every week. This room tracks each ballot week over week, ' +
+      'lines a team’s poll place up against its rating, and separates the programs voters are ahead ' +
+      'of from the ones the numbers like and the ballots have not caught up to yet.',
+    cta:'Open The Poll Machine',
+    stat: () => { const n = DB.rankings.length; if (!n) return null;
+                  return { n:nfmt(n), lab:'ballot rows across ' + (DB.polls.length || 5) + ' polls' }; } },
+
+  { id:'lab', n:6, head:'Plot anything against anything.',
+    body:'The room with no fixed question. Start at the correlation board, pick any cell, and the two ' +
+      'metrics behind it land on a chart with a fit line, an r, and the division and conference filters ' +
+      'still attached. It is the same engine every other room runs on, handed over.',
+    cta:'Open The Lab',
+    stat: () => { const k = METRICS.length; if (k < 2) return null;
+                  return { n:nfmt(k * (k - 1) / 2), lab:'metric pairs to plot' }; } }
+];
+
+function roomCard(r){
+  let st = null;
+  try { st = r.stat(); } catch(e) { st = null; }
+  return '<button class="roomcard" data-go="' + r.id + '">' +
+    '<i class="rk-eyebrow">Question ' + r.n + '</i>' +
+    '<b class="rk-head">' + esc(r.head) + '</b>' +
+    '<span class="rk-body">' + esc(r.body) + '</span>' +
+    '<hr class="rk-rule">' +
+    (st ? '<span class="rk-stat"><b class="rk-num num">' + st.n + '</b>' +
+          '<span class="rk-lab">' + esc(st.lab) + '</span></span>' : '') +
+    '<span class="rk-cta">' + esc(r.cta) + '<span aria-hidden="true">&rarr;</span></span>' +
+  '</button>';
+}
+
 PAGE.home = function(el){
   const ranked = DB.list.filter(t => num(t.ap_rank) != null).length;
   const withEmp = withEmpires();
   const totalPop = DB.list.reduce((a,t) => a + (t.m.emp_pop || 0), 0);
   const totalCty = DB.list.reduce((a,t) => a + (t.m.emp_counties || 0), 0);
 
-  const rooms = PAGES.filter(p => p.id !== 'home' && p.id !== 'cutting').map(p =>
-    '<button class="qcard" data-go="'+p.id+'"><i>'+esc(p.label.split('.')[0])+'</i>' +
-    '<b>'+esc(p.label.replace(/^Q\d+\.\s*/,''))+'</b><span>'+esc(p.q)+'</span></button>').join('');
+  const rooms = ROOM_DEFS.map(roomCard).join('');
 
   const cards = findings().map(f =>
     '<button class="qcard" data-go="'+f.go+'"'+(f.team?' data-team-soft="'+f.team.team_id+'"':'')+'>' +
@@ -2016,7 +2122,8 @@ PAGE.home = function(el){
     '</div>' +
 
     '<div class="card">' +
-      '<h3 class="qh">Six rooms <span>each one is a question</span></h3>' +
+      '<h3 class="qh">Start with a question ' +
+        '<span>six rooms, six questions - every number below is read live</span></h3>' +
       '<div class="cards3" style="margin-top:14px">' + rooms + '</div>' +
     '</div>' +
 

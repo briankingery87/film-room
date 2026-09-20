@@ -295,9 +295,24 @@ function serviceFor(url){
   /* home: rooms BEFORE findings, and six findings */
   const homeOrder = await page.evaluate(() => {
     const cards = Array.from(document.querySelectorAll('#m-home .card'));
-    const idx = t => cards.findIndex(c => /SIX ROOMS|WHAT THE NUMBERS/i.test(c.innerText)
+    const idx = t => cards.findIndex(c => /START WITH A QUESTION|WHAT THE NUMBERS/i.test(c.innerText)
       && new RegExp(t, 'i').test(c.innerText.slice(0, 80)));
-    return { rooms: idx('six rooms'), noticed: idx('what the numbers'),
+    const rc = Array.from(document.querySelectorAll('#m-home .roomcard'));
+    const anat = rc.map(c => ({
+      eyebrow: (c.querySelector('.rk-eyebrow') || {}).textContent || '',
+      head:    (c.querySelector('.rk-head')    || {}).textContent || '',
+      body:   ((c.querySelector('.rk-body')    || {}).textContent || '').length,
+      rule:    !!c.querySelector('.rk-rule'),
+      num:    ((c.querySelector('.rk-num')     || {}).textContent || '').trim(),
+      lab:     ((c.querySelector('.rk-lab')    || {}).textContent || '').trim(),
+      cta:    ((c.querySelector('.rk-cta')     || {}).textContent || '').trim(),
+      go:      c.dataset.go,
+      nested:  c.querySelectorAll('button, a').length
+    }));
+    return { rooms: idx('start with a question'), noticed: idx('what the numbers'),
+      nRooms: rc.length, anat,
+      eyebrowColor: rc.length ? getComputedStyle(rc[0].querySelector('.rk-eyebrow')).color : '',
+      ctaBg: rc.length ? getComputedStyle(rc[0].querySelector('.rk-cta')).backgroundColor : '',
       findings: document.querySelectorAll('#m-home .cards3')[1].querySelectorAll('.qcard').length,
       cols: getComputedStyle(document.querySelectorAll('#m-home .cards3')[1])
               .gridTemplateColumns.split(' ').length };
@@ -306,6 +321,28 @@ function serviceFor(url){
     'home puts the six rooms ABOVE what the numbers noticed');
   ok(homeOrder.findings === 6, 'six findings render (' + homeOrder.findings + ')');
   ok(homeOrder.cols === 3, 'and they land as two rows of THREE, not as many as happen to fit');
+
+  /* ---- the room cards carry the Ask the Atlas / Tux's Take anatomy ---- */
+  ok(homeOrder.nRooms === 6, 'six room cards render (' + homeOrder.nRooms + ')');
+  const anat = homeOrder.anat;
+  ok(anat.every((a, i) => new RegExp('question\\s*' + (i + 1), 'i').test(a.eyebrow)),
+    'every room card carries a numbered QUESTION N eyebrow, in order');
+  ok(anat.every(a => /\?$|\.$/.test(a.head.trim()) && a.head.length > 12),
+    'every room card headline is a real sentence, not a label');
+  ok(anat.every(a => a.body >= 180), 'every room card carries a real paragraph, not a one-liner');
+  ok(anat.every(a => a.rule), 'every room card carries the divider rule');
+  ok(anat.every(a => /\d/.test(a.num) && a.lab.length > 4),
+    'every room card prints a live number with an uppercase label');
+  ok(anat.every(a => /^open\b/i.test(a.cta) && /→|->/.test(a.cta)),
+    'every room card ends in an OPEN ... arrow call to action');
+  ok(anat.every(a => a.nested === 0),
+    'the call to action is a span, not a button nested inside a button');
+  ok(anat.map(a => a.go).join(',') === 'empire,price,pipeline,market,polls,lab',
+    'the six cards point at the six rooms in page order');
+  ok(homeOrder.eyebrowColor === 'rgb(242, 100, 48)',
+    'the eyebrow is Atlas orange, matching Ask the Atlas (' + homeOrder.eyebrowColor + ')');
+  ok(homeOrder.ctaBg === 'rgb(77, 195, 232)',
+    'the call to action is solid Atlas cyan (' + homeOrder.ctaBg + ')');
 
   /* ---- every page renders ---- */
   console.log('\n--- pages ---');
