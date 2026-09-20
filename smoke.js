@@ -463,6 +463,46 @@ function serviceFor(url){
     'cutting: the service catalog uses the Ask the Atlas / Tux row format, one row per layer');
   ok(await count('#m-cutting #svc-list .svcgroup') === 6,
     'and one group heading per service, not one per layer');
+
+  /* ---- the rest-of-the-Atlas block carries the family treatment ---- */
+  const atlas = await page.evaluate(() => {
+    const cards = Array.from(document.querySelectorAll('#m-cutting .atlascard'));
+    const here  = cards.filter(c => c.classList.contains('here'));
+    return {
+      n: cards.length,
+      chips: cards.every(c => !!c.querySelector('.atlaschip')),
+      names: cards.map(c => (c.querySelector('.atlasname') || {}).textContent || ''),
+      paras: cards.every(c => ((c.querySelector('p') || {}).textContent || '').length > 150),
+      bullets: cards.map(c => c.querySelectorAll('li').length),
+      nHere: here.length,
+      hereTag: here.length ? here[0].tagName : '',
+      hereName: here.length ? (here[0].querySelector('.atlasname') || {}).textContent : '',
+      hereChip: here.length ? (here[0].querySelector('.atlaschip') || {}).textContent : '',
+      hereBorder: here.length ? getComputedStyle(here[0]).borderTopColor : '',
+      hereChipBg: here.length ? getComputedStyle(here[0].querySelector('.atlaschip')).backgroundColor : '',
+      hereNameColor: here.length ? getComputedStyle(here[0].querySelector('.atlasname')).color : '',
+      otherNameColor: getComputedStyle(
+        cards.find(c => !c.classList.contains('here')).querySelector('.atlasname')).color,
+      links: cards.filter(c => c.tagName === 'A').length,
+      blank: cards.filter(c => c.tagName === 'A' && c.target === '_blank' &&
+                               /noopener/.test(c.rel)).length
+    };
+  });
+  ok(atlas.n === 4, 'cutting: all four Atlas apps are listed (' + atlas.n + ')');
+  ok(atlas.chips && atlas.paras && atlas.bullets.every(b => b === 3),
+    'each app card carries a chip, a paragraph and three bullets');
+  ok(atlas.nHere === 1, 'exactly one card is marked "you are here" (' + atlas.nHere + ')');
+  ok(/film room/i.test(atlas.hereName), 'and it is The Film Room (' + atlas.hereName + ')');
+  ok(/you are here/i.test(atlas.hereChip), 'its chip says so (' + atlas.hereChip.trim() + ')');
+  ok(atlas.hereTag === 'DIV', 'the current app is not a link back to itself (' + atlas.hereTag + ')');
+  ok(atlas.links === 3 && atlas.blank === 3,
+    'the other three are links, each target=_blank rel=noopener');
+  ok(atlas.hereBorder === 'rgb(242, 100, 48)',
+    'the current card is outlined in Atlas orange (' + atlas.hereBorder + ')');
+  ok(atlas.hereChipBg === 'rgb(242, 100, 48)',
+    'and its chip is filled orange (' + atlas.hereChipBg + ')');
+  ok(atlas.hereNameColor === 'rgb(242, 100, 48)' && atlas.otherNameColor !== atlas.hereNameColor,
+    'the current app name is orange, the other three are not');
   ok(await count('#m-cutting .endpoint .eplab') === 10, 'every row carries its REST endpoint block');
   const svcOrder = await page.evaluate(() => {
     const out = [];
@@ -665,6 +705,10 @@ function serviceFor(url){
     .closest('.card').scrollIntoView({ block:'start' }));
   await page.waitForTimeout(350);
   await page.screenshot({ path:'shot-services.png', fullPage:false });
+  await page.evaluate(() => document.querySelector('.atlasgrid')
+    .closest('.card').scrollIntoView({ block:'center' }));
+  await page.waitForTimeout(350);
+  await page.screenshot({ path:'shot-atlas.png', fullPage:false });
 
   await page.setViewportSize({ width:390, height:844 });
   await page.evaluate(() => setMode('empire'));
