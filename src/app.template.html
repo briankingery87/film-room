@@ -308,28 +308,40 @@ svg.ch.xwide{min-width:720px;max-width:1180px}
 .roomcard:hover .rk-cta{background:#6FD2F0}
 @media(max-width:700px){ .rk-head{font-size:16px} .rk-num{font-size:24px} }
 
-/* ---------- the rest-of-the-Atlas block on the Cutting Room ----------
-   Same treatment Ask the Atlas and Tux's Take give it: a chip, the app name,
-   a paragraph and three bullets per card, and the card for the app you are
-   currently standing in outlined in Atlas orange with its chip filled. The
-   "you are here" card is a div rather than an anchor - a link back to the
-   page you are already on is a dead control. */
+/* ---------- the four-surface strip under the hero ----------
+   Ported from the Ask the Atlas home page so the four apps introduce each
+   other the same way on every one of them: a chip on the left, the app's own
+   role tag on the right, the name, a paragraph, three bullets, and a call to
+   action. The app you are standing in is outlined in Atlas orange with its
+   chip filled, its name orange, and no button - a link back to the page you
+   are already on is a dead control, so it carries a closing line instead.
+   The role tag keeps ITS OWN app color on every surface; only the orange
+   "you are here" treatment moves from page to page. */
 .atlasgrid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr))}
 .atlascard{background:var(--panel-2);border:1px solid var(--line);border-radius:var(--r);
-  padding:14px;display:block;color:inherit;min-width:0}
+  padding:14px;color:inherit;min-width:0;display:flex;flex-direction:column}
 a.atlascard:hover{border-color:var(--accent);text-decoration:none}
 a.atlascard:hover .atlasname{text-decoration:underline}
 .atlascard.here{border:2px solid var(--alert);padding:13px;background:rgba(242,100,48,.05)}
-.atlashead{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:9px}
+.atlastop{display:flex;gap:9px;align-items:center;justify-content:space-between;margin-bottom:9px}
 .atlaschip{font-size:9.5px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;
   background:rgba(159,182,198,.16);color:var(--ink-2);border-radius:4px;padding:3px 7px;white-space:nowrap}
 .atlascard.here .atlaschip{background:var(--alert);color:#190800}
-.atlasname{font-size:12.5px;font-weight:900;letter-spacing:.11em;text-transform:uppercase;color:var(--accent)}
+.atlastag{font-size:9.5px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;
+  border:1px solid currentColor;border-radius:4px;padding:2px 7px;white-space:nowrap}
+.atlasname{display:block;font-size:12.5px;font-weight:900;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:8px}
 .atlascard.here .atlasname{color:var(--alert)}
 .atlascard p{margin:0;color:var(--ink-2);font-size:12.5px;line-height:1.5}
 .atlascard ul{margin:9px 0 0;padding-left:17px;color:var(--ink-2);font-size:12px;line-height:1.5}
 .atlascard li{margin:0 0 3px}
 .atlascard p b,.atlascard li b{color:var(--ink)}
+.atlascta{align-self:flex-start;margin-top:14px;background:var(--accent);color:var(--deep);
+  border-radius:8px;padding:9px 14px;font-size:11.5px;font-weight:900;letter-spacing:.06em}
+a.atlascard:hover .atlascta{background:#6FD2F0}
+.atlasfoot{margin-top:14px;color:var(--ink-3);font-size:11px;line-height:1.4}
+/* the bullets, not the paragraph, take the slack so every button lines up */
+.atlascard ul{flex:1 1 auto}
 
 .pill{display:inline-block;border-radius:999px;padding:2px 9px;font-size:10.5px;font-weight:900;
   letter-spacing:.06em;text-transform:uppercase}
@@ -2027,6 +2039,69 @@ function findings(){
   return out.slice(0, 6);
 }
 
+/* ============================ THE FOUR SURFACES =================
+   The strip that sits under the hero on every custom Atlas page, so the four
+   surfaces introduce each other identically wherever you land. Ported from
+   the Ask the Atlas home page: chip left, the app's own role tag right, the
+   name, a paragraph, three bullets, a button.
+
+   Two rules carry across the family. The role tag keeps its own app color on
+   every surface - only the orange "you are here" treatment moves. And the app
+   you are standing in is a div rather than an anchor, with a closing line in
+   place of the button, because a link back to the page you are already on is
+   a dead control.                                                        */
+const ATLAS_APPS = [
+  { chip:'Configurable', tag:'Explore', tagColor:'var(--ink-3)',
+    name:'The CFB Atlas Experience', href:ATLAS.exb, cta:'Open the Experience',
+    p:'Layer-first. Pick a view, turn layers on, click a feature, read the popup. It is the place to ' +
+      '<b>explore</b> - fan territories, empires, recruiting flows, travel demand, the Top 25, the core ' +
+      'map with everything on it.',
+    li:['Nine web maps and four dashboards, all authored',
+        'Arcade popups carry the narrative and the placeholder rules',
+        'Changes are made by configuration, not code'] },
+
+  { chip:'Custom', tag:'Question-first', tagColor:'var(--alert)',
+    name:'Ask the Atlas', href:ATLAS.ask, cta:'Open Ask the Atlas',
+    p:'Question-first. Reads the same services through their REST endpoints and computes answers ' +
+      'configuration cannot: nearest programs across all four divisions, head-to-head comparisons, ' +
+      'ad-hoc screening, ranked slates, strength of schedule.',
+    li:['One HTML file, no server, no API key, no build step',
+        'Client-side math on the published data - joins, distances, indexes',
+        'Grows through the season as the services fill in'] },
+
+  { chip:'Custom', tag:'Post-game recaps', tagColor:'var(--accent)',
+    name:'Tux’s Take', href:ATLAS.tux, cta:'Open Tux’s Take',
+    p:'Result-first. Scores what is worth watching <b>before</b> kickoff, then reads the same Atlas and ' +
+      'writes what happened <b>after</b> - final scores, quarter by quarter, an Aftermath Index and a ' +
+      'recap in a beagle’s voice.',
+    li:['Every completed game on The Slate links to its recap',
+        'The Tux grade and the Aftermath Index are quoted, never recomputed',
+        'Same <code>game_id</code> join key as the rest of the Atlas'] },
+
+  { chip:'Custom · you are here', tag:'Analytics', tagColor:'var(--c6)',
+    name:'The Film Room', href:null, cta:null,
+    p:'Relationship-first. Puts two different Atlas layers on the same pair of axes and asks whether they ' +
+      'have anything to do with each other. Does owning people win games? What does the schedule cost?',
+    li:['Six questions plus The Lab - plot anything against anything',
+        'Fourteen chart forms, all inline SVG, no chart library',
+        'Every correlation prints its n and stops at “tendency”'],
+    foot:'Four surfaces, one data model. None of them replaces the others.' }
+];
+
+const ATLAS_CARDS = ATLAS_APPS.map(a => {
+  const inner =
+    '<div class="atlastop"><span class="atlaschip">' + esc(a.chip) + '</span>' +
+    '<span class="atlastag" style="color:' + a.tagColor + '">' + esc(a.tag) + '</span></div>' +
+    '<span class="atlasname">' + esc(a.name) + '</span>' +
+    '<p>' + a.p + '</p>' +
+    '<ul>' + a.li.map(x => '<li>' + x + '</li>').join('') + '</ul>' +
+    (a.cta ? '<span class="atlascta">' + esc(a.cta) + ' &rarr;</span>' : '') +
+    (a.foot ? '<div class="atlasfoot">' + esc(a.foot) + '</div>' : '');
+  return a.href
+    ? '<a class="atlascard" href="' + a.href + '" target="_blank" rel="noopener">' + inner + '</a>'
+    : '<div class="atlascard here">' + inner + '</div>';
+}).join('');
+
 /* ============================ THE ROOM CARDS ====================
    The six questions, carrying the same anatomy the cards on Ask the Atlas and
    Tux's Take carry: an orange eyebrow, the question, a paragraph of what the
@@ -2134,6 +2209,8 @@ PAGE.home = function(el){
       'browser from the published services, and every one shows its working.</p>' +
       '</div>' +
     '</div>' +
+
+    '<div class="atlasgrid">' + ATLAS_CARDS + '</div>' +
 
     '<div class="tiles">' +
       tile(nfmt(DB.list.length), 'Programs', 'FBS, FCS, D2 and D3') +
@@ -3807,57 +3884,6 @@ function formGallery(){
       '<span class="used">Used on <b>' + esc(where) + '</b></span></div>').join('') + '</div>';
 }
 
-/* ---------------- the rest of the Atlas ----------------
-   Four apps, one data model. Rendered the way Ask the Atlas and Tux's Take
-   render it, down to the orange outline on the one you are standing in - the
-   reader should be able to tell at a glance which of the four this page is
-   without reading a word of it. The current app is a div, not an anchor,
-   because a link back to the page you are already on is a dead control. */
-const ATLAS_APPS = [
-  { chip:'Configurable', name:'The CFB Atlas Experience', href:ATLAS.exb,
-    p:'Layer-first. Built in ArcGIS Experience Builder from the same services: pick a view, turn layers ' +
-      'on, click a feature, read the popup. It is the place to <b>explore</b> - fan territories, empires, ' +
-      'recruiting flows, travel demand, the Top 25, the core map with everything on it.',
-    li:['Nine web maps and four dashboards, all authored, all configurable',
-        'Arcade popups carry the narrative, the colors and the placeholder rules',
-        'Changes are made by configuration, not code'] },
-
-  { chip:'Custom', name:'Ask the Atlas', href:ATLAS.ask,
-    p:'Question-first. A single custom page that reads the same services through their REST endpoints and ' +
-      'computes answers the configurable side cannot: nearest programs across all four divisions, ' +
-      'head-to-head comparisons, ad-hoc screening, ranked slates, strength of schedule.',
-    li:['One HTML file, no server, no API key, no build step',
-        'Client-side math on top of the published data - joins, distances, indexes',
-        'Grows through the season as the services fill in'] },
-
-  { chip:'Post-game', name:'Tux’s Take', href:ATLAS.tux,
-    p:'Result-first. This page scores what is worth watching <b>before</b> kickoff. Tux’s Take reads the ' +
-      'same Atlas and writes what actually happened <b>after</b> - final scores, quarter by quarter, an ' +
-      'Aftermath Index and a recap in a beagle’s voice.',
-    li:['Every completed game on The Slate links straight to its recap',
-        'The Tux grade and the Aftermath Index are quoted here, never recomputed',
-        'Same <code>game_id</code> join key as everything else in the Atlas'] },
-
-  { chip:'Custom · you are here', name:'The Film Room', href:null,
-    p:'Comparison-first. The only one of the four that puts two <b>different</b> layers on the same pair ' +
-      'of axes. It does not ask what is where, or what happened on Saturday: it asks whether owning people ' +
-      'wins games, what the schedule costs, who farms their own country, and where the line is wrong.',
-    li:['Six rooms and fourteen chart forms, every mark drawn by this file',
-        'The recruit-to-county join no other Atlas app makes',
-        'The Lab hands the engine over - plot any metric against any other'] }
-];
-
-const ATLAS_CARDS = ATLAS_APPS.map(a => {
-  const inner =
-    '<div class="atlashead"><span class="atlaschip">' + esc(a.chip) + '</span>' +
-    '<span class="atlasname">' + esc(a.name) + '</span></div>' +
-    '<p>' + a.p + '</p>' +
-    '<ul>' + a.li.map(x => '<li>' + x + '</li>').join('') + '</ul>';
-  return a.href
-    ? '<a class="atlascard" href="' + a.href + '" target="_blank" rel="noopener">' + inner + '</a>'
-    : '<div class="atlascard here">' + inner + '</div>';
-}).join('');
-
 PAGE.cutting = function(el){
   const n = DB.notes.soil || {};
   el.innerHTML =
@@ -3965,13 +3991,6 @@ PAGE.cutting = function(el){
       'Census via Esri Living Atlas for county population. School names and marks are trademarks of their ' +
       'institutions, used for identification only. Betting figures are historical record, not advice. ' +
       '<b>Gamble responsibly. 18+.</b></p>' +
-    '</div>' +
-
-    '<div class="card">' +
-      '<h3 class="qh">The rest of the Atlas</h3>' +
-      '<div class="atlasgrid" style="margin-top:12px">' + ATLAS_CARDS + '</div>' +
-      '<p class="sub tiny" style="margin-top:12px">All four share one data model and one join key - the ' +
-      'CFBD team id - which is the only reason a page like The Pipeline can exist at all.</p>' +
     '</div>';
 };
 

@@ -345,6 +345,63 @@ function serviceFor(url){
   ok(homeOrder.ctaBg === 'rgb(77, 195, 232)',
     'the call to action is solid Atlas cyan (' + homeOrder.ctaBg + ')');
 
+  /* ---- the four-surface strip sits under the hero, above the rooms ---- */
+  const atlas = await page.evaluate(() => {
+    const sec   = document.querySelector('#m-home');
+    const cards = Array.from(sec.querySelectorAll('.atlascard'));
+    const here  = cards.filter(c => c.classList.contains('here'));
+    const kids  = Array.from(sec.children);
+    const posOf = el => kids.findIndex(k => k === el || k.contains(el));
+    return {
+      n: cards.length,
+      names: cards.map(c => ((c.querySelector('.atlasname') || {}).textContent || '').trim()),
+      tags:  cards.map(c => ((c.querySelector('.atlastag')  || {}).textContent || '').trim()),
+      paras: cards.every(c => ((c.querySelector('p') || {}).textContent || '').length > 140),
+      bullets: cards.map(c => c.querySelectorAll('li').length),
+      ctas:  cards.filter(c => c.querySelector('.atlascta')).length,
+      nHere: here.length,
+      hereTag: here.length ? here[0].tagName : '',
+      hereName: here.length ? (here[0].querySelector('.atlasname') || {}).textContent.trim() : '',
+      hereChip: here.length ? (here[0].querySelector('.atlaschip') || {}).textContent.trim() : '',
+      hereHasCta: here.length ? !!here[0].querySelector('.atlascta') : true,
+      hereFoot: here.length ? !!here[0].querySelector('.atlasfoot') : false,
+      hereBorder: here.length ? getComputedStyle(here[0]).borderTopColor : '',
+      hereChipBg: here.length ? getComputedStyle(here[0].querySelector('.atlaschip')).backgroundColor : '',
+      hereNameColor: here.length ? getComputedStyle(here[0].querySelector('.atlasname')).color : '',
+      tagColors: cards.map(c => getComputedStyle(c.querySelector('.atlastag')).color),
+      links: cards.filter(c => c.tagName === 'A').length,
+      blank: cards.filter(c => c.tagName === 'A' && c.target === '_blank' && /noopener/.test(c.rel)).length,
+      posStrip: posOf(cards[0]),
+      posRooms: posOf(sec.querySelector('.roomcard')),
+      posHero:  posOf(sec.querySelector('.hero'))
+    };
+  });
+  ok(atlas.n === 4, 'home: all four Atlas surfaces are introduced (' + atlas.n + ')');
+  ok(atlas.posHero < atlas.posStrip && atlas.posStrip < atlas.posRooms,
+    'the strip sits under the hero and above the rooms');
+  ok(atlas.paras && atlas.bullets.every(b => b === 3),
+    'each surface carries a paragraph and three bullets');
+  ok(atlas.tags.join('|') === 'Explore|Question-first|Post-game recaps|Analytics',
+    'each surface carries its own role tag (' + atlas.tags.join(', ') + ')');
+  ok(new Set(atlas.tagColors).size === 4, 'and the four role tags are four different colors');
+  ok(atlas.nHere === 1 && /film room/i.test(atlas.hereName),
+    'exactly one card is "you are here" and it is The Film Room (' + atlas.hereName + ')');
+  ok(/you are here/i.test(atlas.hereChip), 'its chip says so (' + atlas.hereChip + ')');
+  ok(atlas.hereTag === 'DIV' && !atlas.hereHasCta,
+    'the current app is neither a link nor a button back to itself');
+  ok(atlas.hereFoot, 'and it closes with the four-surfaces line instead');
+  ok(atlas.links === 3 && atlas.blank === 3 && atlas.ctas === 3,
+    'the other three are links with a call to action, target=_blank rel=noopener');
+  ok(atlas.hereBorder === 'rgb(242, 100, 48)' && atlas.hereChipBg === 'rgb(242, 100, 48)' &&
+     atlas.hereNameColor === 'rgb(242, 100, 48)',
+    'the current card is orange: outline, chip fill and name');
+  const gone = await page.evaluate(() => ({
+    cards: document.querySelectorAll('#m-cutting .atlascard').length,
+    heading: /rest of the atlas/i.test(document.querySelector('#m-cutting').innerText)
+  }));
+  ok(gone.cards === 0 && !gone.heading,
+    'and the Cutting Room no longer repeats it (' + gone.cards + ' cards)');
+
   /* ---- every page renders ---- */
   console.log('\n--- pages ---');
   for (const id of PAGES){
@@ -464,45 +521,6 @@ function serviceFor(url){
   ok(await count('#m-cutting #svc-list .svcgroup') === 6,
     'and one group heading per service, not one per layer');
 
-  /* ---- the rest-of-the-Atlas block carries the family treatment ---- */
-  const atlas = await page.evaluate(() => {
-    const cards = Array.from(document.querySelectorAll('#m-cutting .atlascard'));
-    const here  = cards.filter(c => c.classList.contains('here'));
-    return {
-      n: cards.length,
-      chips: cards.every(c => !!c.querySelector('.atlaschip')),
-      names: cards.map(c => (c.querySelector('.atlasname') || {}).textContent || ''),
-      paras: cards.every(c => ((c.querySelector('p') || {}).textContent || '').length > 150),
-      bullets: cards.map(c => c.querySelectorAll('li').length),
-      nHere: here.length,
-      hereTag: here.length ? here[0].tagName : '',
-      hereName: here.length ? (here[0].querySelector('.atlasname') || {}).textContent : '',
-      hereChip: here.length ? (here[0].querySelector('.atlaschip') || {}).textContent : '',
-      hereBorder: here.length ? getComputedStyle(here[0]).borderTopColor : '',
-      hereChipBg: here.length ? getComputedStyle(here[0].querySelector('.atlaschip')).backgroundColor : '',
-      hereNameColor: here.length ? getComputedStyle(here[0].querySelector('.atlasname')).color : '',
-      otherNameColor: getComputedStyle(
-        cards.find(c => !c.classList.contains('here')).querySelector('.atlasname')).color,
-      links: cards.filter(c => c.tagName === 'A').length,
-      blank: cards.filter(c => c.tagName === 'A' && c.target === '_blank' &&
-                               /noopener/.test(c.rel)).length
-    };
-  });
-  ok(atlas.n === 4, 'cutting: all four Atlas apps are listed (' + atlas.n + ')');
-  ok(atlas.chips && atlas.paras && atlas.bullets.every(b => b === 3),
-    'each app card carries a chip, a paragraph and three bullets');
-  ok(atlas.nHere === 1, 'exactly one card is marked "you are here" (' + atlas.nHere + ')');
-  ok(/film room/i.test(atlas.hereName), 'and it is The Film Room (' + atlas.hereName + ')');
-  ok(/you are here/i.test(atlas.hereChip), 'its chip says so (' + atlas.hereChip.trim() + ')');
-  ok(atlas.hereTag === 'DIV', 'the current app is not a link back to itself (' + atlas.hereTag + ')');
-  ok(atlas.links === 3 && atlas.blank === 3,
-    'the other three are links, each target=_blank rel=noopener');
-  ok(atlas.hereBorder === 'rgb(242, 100, 48)',
-    'the current card is outlined in Atlas orange (' + atlas.hereBorder + ')');
-  ok(atlas.hereChipBg === 'rgb(242, 100, 48)',
-    'and its chip is filled orange (' + atlas.hereChipBg + ')');
-  ok(atlas.hereNameColor === 'rgb(242, 100, 48)' && atlas.otherNameColor !== atlas.hereNameColor,
-    'the current app name is orange, the other three are not');
   ok(await count('#m-cutting .endpoint .eplab') === 10, 'every row carries its REST endpoint block');
   const svcOrder = await page.evaluate(() => {
     const out = [];
@@ -705,9 +723,9 @@ function serviceFor(url){
     .closest('.card').scrollIntoView({ block:'start' }));
   await page.waitForTimeout(350);
   await page.screenshot({ path:'shot-services.png', fullPage:false });
-  await page.evaluate(() => document.querySelector('.atlasgrid')
-    .closest('.card').scrollIntoView({ block:'center' }));
-  await page.waitForTimeout(350);
+  await page.evaluate(() => { setMode('home');
+    document.querySelector('.atlasgrid').scrollIntoView({ block:'center' }); });
+  await page.waitForTimeout(400);
   await page.screenshot({ path:'shot-atlas.png', fullPage:false });
 
   await page.setViewportSize({ width:390, height:844 });
