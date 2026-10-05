@@ -45,7 +45,7 @@ const T = (id, school, div, conf, over) => Object.assign({
   ap_rank:PH, coaches_rank:PH, sp_rating:PH, elo:PH, fpi:PH, talent:PH,
   recruiting_rank:PH, recruiting_pts:PH, travel_gc_miles:-1, travel_div_rank:PH,
   travel_div_count:PH, travel_conf_avg:PH, record_2025:'N/A', final_rank_2025:PH,
-  head_coach:'A Coach', rival_school:'N/A'
+  head_coach:'A Coach', rival_school:'N/A', stamp_updated:Date.UTC(2026,9,4,20,8)
 }, over);
 
 const teams = [
@@ -88,7 +88,7 @@ const E = (team_id, school, conference, division, counties, population, states, 
     pop_share_us:+(population/336000000*100).toFixed(2), avg_share:0.45, pop_rank:1, county_rank:1,
     states_touched:states, battlegrounds:battles, top_county:school+' County',
     headline:school+' country', max_empire_pop:9100000, max_empire_counties:220,
-    n_empires:6, n_landless_fbs:1, last_updated:Date.UTC(2026,8,14,11,0) }, over);
+    n_empires:6, n_landless_fbs:1, last_updated:Date.UTC(2026,7,5,22,6) }, over);
 
 const empires = [
   E(1,'Northgate','Big Test','FBS',140,9100000,4,31,{ headline:'Northgate country runs to the river', top_county:'Kent County' }),
@@ -226,7 +226,9 @@ const R = (id, week, hid, aid, hp, ap, spread, over) => ({
   closing_spread:spread, over_under:over, cover_result:'N/A', ou_result:'N/A',
   home_rank:PH, away_rank:PH, upset:0, rivalry:0, road_miles:PH,
   home_logo_url:'', away_logo_url:'', one_score:0, went_ot:0, ranked_matchup:0,
-  fav_covered:0, home_won: hp>ap?1:0, ml_payout:PH
+  fav_covered:0, home_won: hp>ap?1:0, ml_payout:PH,
+  /* one recap row stamped newest - the footer must pick the max, not the first */
+  stamp_updated: id === 103 ? Date.UTC(2026,9,4,20,16) : Date.UTC(2026,9,4,20,8)
 });
 
 const results = [
@@ -292,6 +294,15 @@ function serviceFor(url){
   console.log('\n--- load ---');
   ok(errors.length === 0, 'no page errors on load' + (errors.length ? ' :: ' + errors[0] : ''));
   ok(/programs/i.test(await page.locator('#loadstate').innerText()), 'load stamp reports program count');
+
+  /* the footer's refresh date is the weekly pipeline's stamp, not the model's */
+  const foot = await page.locator('#foot-stamp').innerText();
+  ok(/data last refreshed\s+oct 4, 2026, 4:16/i.test(foot),
+    'Data last refreshed reads the newest weekly stamp (' + (foot.split('\n')[0] || '') + ')');
+  ok(!/data last refreshed\s+aug/i.test(foot),
+    'and NOT the territory model stamp off the empires layer');
+  ok(/fan territory model last run\s+aug 5, 2026/i.test(foot),
+    'the model run date gets its own line, so neither is passed off as the other');
 
   /* home: rooms BEFORE findings, and six findings */
   const homeOrder = await page.evaluate(() => {

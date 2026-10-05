@@ -544,7 +544,8 @@ const F = {
     'city','state','capacity','elevation_m','dome','grass','year_built','latitude','longitude',
     'primary_color','text_color','logo_url','ap_rank','coaches_rank','sp_rating','elo','fpi','talent',
     'recruiting_rank','recruiting_pts','travel_gc_miles','travel_div_rank','travel_div_count',
-    'travel_conf_avg','record_2025','final_rank_2025','head_coach','rival_school'],
+    'travel_conf_avg','record_2025','final_rank_2025','head_coach','rival_school',
+    'stamp_updated'],
   empires: ['team_id','school','conference','division','counties','population','pop_share_us',
     'avg_share','pop_rank','county_rank','states_touched','battlegrounds','top_county','headline',
     'max_empire_pop','max_empire_counties','n_empires','n_landless_fbs','last_updated'],
@@ -566,7 +567,7 @@ const F = {
     'aftermath_index','elo_swing','attendance','capacity','pct_capacity','neutral_site',
     'conference_game','closing_spread','over_under','cover_result','ou_result','home_rank','away_rank',
     'upset','rivalry','road_miles','home_logo_url','away_logo_url','one_score','went_ot',
-    'ranked_matchup','fav_covered','home_won','ml_payout']
+    'ranked_matchup','fav_covered','home_won','ml_payout','stamp_updated']
 };
 for (const k in F) F[k] = F[k].join(',');
 
@@ -863,7 +864,7 @@ async function queryAll(url, params){
 const DB = {
   ready:false, teams:new Map(), list:[], empires:new Map(), counties:[], countyBy:new Map(),
   states:[], recruits:[], travel:[], rankings:[], ratings:new Map(), lines:[], results:[],
-  loaded:new Set(), weeks:[], polls:[], refreshed:null,
+  loaded:new Set(), weeks:[], polls:[], refreshed:null, modelRun:null,
   meta:{ nEmpires:null, nLandless:null, maxEmpirePop:null, empireUpdated:null },
   notes:{}
 };
@@ -908,8 +909,19 @@ async function loadCore(){
     DB.meta.nEmpires    = num(e0.n_empires) != null ? num(e0.n_empires) : empires.length;
     DB.meta.nLandless   = num(e0.n_landless_fbs);
     DB.meta.maxEmpirePop= num(e0.max_empire_pop);
-    if (has(e0.last_updated)) DB.refreshed = new Date(e0.last_updated);
+    /* the territory model's own run date - NOT the weekly refresh. The fan
+       territory, recruiting and travel layers are only rewritten when the
+       gravity model is rerun, so this stamp can sit weeks behind the rest. */
+    if (has(e0.last_updated)) DB.modelRun = new Date(e0.last_updated);
   }
+  /* "Data last refreshed" is the WEEKLY pipeline's stamp: the newest
+     stamp_updated on the two layers it rewrites every Sunday that this page
+     reads at load - Teams and the recap archive. Reading it off the empires
+     layer was the bug: that layer only changes when the territory model is
+     rerun, so the footer said August in October. No stamp, no line - a
+     placeholder date is worse than none. */
+  const stamps = teams.concat(results).map(r => num(r.stamp_updated)).filter(v => v != null && v > 0);
+  DB.refreshed = stamps.length ? new Date(Math.max.apply(null, stamps)) : null;
   DB.weeks = [...new Set(results.map(r => r.week))].filter(w => isFinite(w)).sort((a,b)=>a-b);
   DB.polls = [...new Set(rankings.map(r => r.poll))].filter(Boolean).sort();
   deriveCore();
@@ -3994,7 +4006,9 @@ PAGE.cutting = function(el){
     '<div class="card">' +
       '<h3 class="qh">Services this page reads <span>all public, all read-only</span></h3>' +
       '<p class="sub tiny" style="margin:0 0 12px">Ten hosted layers across six feature services, published ' +
-      'from ArcGIS Pro notebooks in the CFB Atlas workspace and refreshed by a scheduled task every Sunday. ' +
+      'from ArcGIS Pro notebooks in the CFB Atlas workspace. Teams, Stats and Recaps are rewritten by a ' +
+      'scheduled task every Sunday; Territories, Recruiting and Travel only when the fan territory model is ' +
+      'rerun, so the footer carries both dates. ' +
       'Item pages open in ArcGIS Online; the endpoints are the REST layers this page actually queries, live ' +
       'and anonymously, on every load. No key, no token, no server. Only Teams, Fan Empires, Rankings, ' +
       'Ratings and GameResults load on arrival - the other five are fetched the first time a page needs ' +
@@ -4251,6 +4265,8 @@ async function boot(){
   const footStamp = () => { const el = $('#foot-stamp'); if (!el) return;
     el.innerHTML = (DB.refreshed ? '<b>Data last refreshed</b> ' + fmtET(DB.refreshed) +
       ' - set by the weekly pipeline, not by this page.<br>' : '') +
+    (DB.modelRun ? '<b>Fan territory model last run</b> ' + fmtET(DB.modelRun) +
+      ' - territories, recruiting and travel change only when it is rerun.<br>' : '') +
     '<b>This page loaded</b> ' + fmtET(loaded) + '. Reload for the latest; nothing here is cached.'; };
   footStamp();
 
