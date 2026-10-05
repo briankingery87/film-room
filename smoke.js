@@ -301,8 +301,7 @@ function serviceFor(url){
     'Data last refreshed reads the newest weekly stamp (' + (foot.split('\n')[0] || '') + ')');
   ok(!/data last refreshed\s+aug/i.test(foot),
     'and NOT the territory model stamp off the empires layer');
-  ok(/fan territory model last run\s+aug 5, 2026/i.test(foot),
-    'the model run date gets its own line, so neither is passed off as the other');
+  ok(!/fan territory model/i.test(foot), 'the footer carries one refresh date only');
 
   /* home: rooms BEFORE findings, and six findings */
   const homeOrder = await page.evaluate(() => {

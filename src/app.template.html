@@ -864,7 +864,7 @@ async function queryAll(url, params){
 const DB = {
   ready:false, teams:new Map(), list:[], empires:new Map(), counties:[], countyBy:new Map(),
   states:[], recruits:[], travel:[], rankings:[], ratings:new Map(), lines:[], results:[],
-  loaded:new Set(), weeks:[], polls:[], refreshed:null, modelRun:null,
+  loaded:new Set(), weeks:[], polls:[], refreshed:null,
   meta:{ nEmpires:null, nLandless:null, maxEmpirePop:null, empireUpdated:null },
   notes:{}
 };
@@ -909,10 +909,6 @@ async function loadCore(){
     DB.meta.nEmpires    = num(e0.n_empires) != null ? num(e0.n_empires) : empires.length;
     DB.meta.nLandless   = num(e0.n_landless_fbs);
     DB.meta.maxEmpirePop= num(e0.max_empire_pop);
-    /* the territory model's own run date - NOT the weekly refresh. The fan
-       territory, recruiting and travel layers are only rewritten when the
-       gravity model is rerun, so this stamp can sit weeks behind the rest. */
-    if (has(e0.last_updated)) DB.modelRun = new Date(e0.last_updated);
   }
   /* "Data last refreshed" is the WEEKLY pipeline's stamp: the newest
      stamp_updated on the two layers it rewrites every Sunday that this page
@@ -4008,7 +4004,7 @@ PAGE.cutting = function(el){
       '<p class="sub tiny" style="margin:0 0 12px">Ten hosted layers across six feature services, published ' +
       'from ArcGIS Pro notebooks in the CFB Atlas workspace. Teams, Stats and Recaps are rewritten by a ' +
       'scheduled task every Sunday; Territories, Recruiting and Travel only when the fan territory model is ' +
-      'rerun, so the footer carries both dates. ' +
+      'rerun. ' +
       'Item pages open in ArcGIS Online; the endpoints are the REST layers this page actually queries, live ' +
       'and anonymously, on every load. No key, no token, no server. Only Teams, Fan Empires, Rankings, ' +
       'Ratings and GameResults load on arrival - the other five are fetched the first time a page needs ' +
@@ -4265,8 +4261,6 @@ async function boot(){
   const footStamp = () => { const el = $('#foot-stamp'); if (!el) return;
     el.innerHTML = (DB.refreshed ? '<b>Data last refreshed</b> ' + fmtET(DB.refreshed) +
       ' - set by the weekly pipeline, not by this page.<br>' : '') +
-    (DB.modelRun ? '<b>Fan territory model last run</b> ' + fmtET(DB.modelRun) +
-      ' - territories, recruiting and travel change only when it is rerun.<br>' : '') +
     '<b>This page loaded</b> ' + fmtET(loaded) + '. Reload for the latest; nothing here is cached.'; };
   footStamp();
 
